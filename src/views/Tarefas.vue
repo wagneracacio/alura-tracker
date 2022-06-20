@@ -26,7 +26,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success">Salvar alterações</button>
+                <button @click="alterarTarefa" class="button is-success">Salvar alterações</button>
                 <button @click="fecharModal" class="button">Cancelar</button>
             </footer>
         </div>
@@ -46,6 +46,7 @@ import {
     useStore
 } from '@/store';
 import {
+  ALTERAR_TAREFA,
     CADASTRAR_TAREFA,
     OBTER_PROJETOS,
     OBTER_TAREFAS
@@ -77,6 +78,10 @@ export default defineComponent({
         },
         fecharModal() {
             this.tarefaSelecionada = null
+        },
+        alterarTarefa () {
+            this.store.dispatch(ALTERAR_TAREFA, this.tarefaSelecionada)
+                .then(() => this.fecharModal())
         }
     },
     setup() {
