@@ -26,7 +26,7 @@ import {
 } from '@/store'
 import useNotificador from '@/hooks/notificador'
 import {
-    defineComponent
+    defineComponent, ref
 } from 'vue'
 import {
     ALTERAR_PROJETO,
@@ -37,18 +37,6 @@ export default defineComponent({
     props: {
         id: {
             type: String
-        }
-    },
-    //mixins: [notificacaoMixin],
-    mounted() {
-        if (this.id) {
-            const projeto = this.store.state.projeto.projetos.find(proj => proj.id == this.id)
-            this.nomeDoProjeto = projeto?.nome || ''
-        }
-    },
-    data() {
-        return {
-            nomeDoProjeto: ''
         }
     },
     methods: {
@@ -69,14 +57,20 @@ export default defineComponent({
             this.$router.push('/projetos')
         }
     },
-    setup() {
+    setup(props) {
         const store = useStore()
         const {
             notificar
         } = useNotificador()
+        const nomeDoProjeto = ref("")
+        if (props.id) {
+            const projeto = store.state.projeto.projetos.find(proj => proj.id == props.id)
+            nomeDoProjeto.value = projeto?.nome || ''
+        }
         return {
             store,
-            notificar
+            notificar,
+            nomeDoProjeto
         }
     }
 })
