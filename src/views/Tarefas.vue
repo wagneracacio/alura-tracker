@@ -4,6 +4,14 @@
     <Box v-if="listaEstaVazia">
         Você não esta muito produtivo hoje :(
     </Box>
+    <div class="field">
+        <p class="control has-icons-left">
+            <input type="text" class="input" placeholder="Digite para filtrar" v-model="filtro">
+            <span class="icon is-small is-left">
+                <i class="fas fa-search"></i>
+            </span>
+        </p>
+    </div>
     <Tarefa v-for="(tarefa, index) in tarefas" :key="index" :tarefa="tarefa" @aoTarefaClicada="selecionarTarefa" />
     <div class="modal" :class="{'is-active': tarefaSelecionada}" v-if="tarefaSelecionada">
         <div class="modal-background"></div>
@@ -17,12 +25,7 @@
                     <label for="descricaoDaTarefa" class="label">
                         Descrição
                     </label>
-                    <input 
-                        type="text" 
-                        class="input" 
-                        v-model="tarefaSelecionada.descricao" 
-                        id="descricaoDaTarefa"
-                    />
+                    <input type="text" class="input" v-model="tarefaSelecionada.descricao" id="descricaoDaTarefa" />
                 </div>
             </section>
             <footer class="modal-card-foot">
@@ -37,7 +40,8 @@
 <script lang="ts">
 import {
     computed,
-    defineComponent
+    defineComponent,
+    ref
 } from 'vue'
 import Formulario from '../components/Formulario.vue'
 import Tarefa from '../components/Tarefa.vue';
@@ -46,7 +50,7 @@ import {
     useStore
 } from '@/store';
 import {
-  ALTERAR_TAREFA,
+    ALTERAR_TAREFA,
     CADASTRAR_TAREFA,
     OBTER_PROJETOS,
     OBTER_TAREFAS
@@ -79,7 +83,7 @@ export default defineComponent({
         fecharModal() {
             this.tarefaSelecionada = null
         },
-        alterarTarefa () {
+        alterarTarefa() {
             this.store.dispatch(ALTERAR_TAREFA, this.tarefaSelecionada)
                 .then(() => this.fecharModal())
         }
@@ -88,9 +92,17 @@ export default defineComponent({
         const store = useStore()
         store.dispatch(OBTER_TAREFAS)
         store.dispatch(OBTER_PROJETOS)
+
+        const filtro = ref("")
+
+        const tarefas = computed(() => 
+            store.state.tarefa.tarefas.filter(
+                (t) => !filtro.value || t.descricao.includes(filtro.value)
+            ))
         return {
-            tarefas: computed(() => store.state.tarefas),
-            store
+            tarefas,
+            store,
+            filtro
         }
     }
 });
